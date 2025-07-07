@@ -91,34 +91,37 @@ function canGenerateQuiz(userId) {
 
 app.post("/api/register", async (req, res) => {
     const { username, email, firstName, lastName, password } = req.body;
-
     const callProcedure = 'CALL register_user(?, ?, ?, ?, ?)';
 
-    await dbManager.getConnection().query(callProcedure, [username, email, firstName, lastName, password], function (err, result) {
-        if (err) {
-            console.error("Database error:", err);
-            res.status(500).json({success: false, message: err.sqlMessage || "Database error"});
-            return;
-        }
+    try {
+        const connection = await dbManager.getConnection();
+        const [resultSets] = await connection.promise().query(callProcedure, [username, email, firstName, lastName, password]);
 
-        const message = result[0][0].message;
+        const result = resultSets[0]; // första resultset från stored procedure
+        const message = result[0]?.message || "Unknown response";
+
         if (message.includes("User registered")) {
             const userData = {
-                user_id: result[0][0].user_id,
-                username: result[0][0].username,
-                email: result[0][0].email,
-                firstname: result[0][0].firstname,
-                lastname: result[0][0].lastname,
-                last_login: result[0][0].last_login
+                user_id: result[0].user_id,
+                username: result[0].username,
+                email: result[0].email,
+                firstname: result[0].firstname,
+                lastname: result[0].lastname,
+                last_login: result[0].last_login
             };
+
             console.log("User data:", userData);
             createSampleQuiz(userData.user_id);
-            res.json({success: true, message: "User registered successfully", user: userData});
+            res.json({ success: true, message: "User registered successfully", user: userData });
 
         } else {
-            res.json({success: false, message: message});
+            res.json({ success: false, message });
         }
-    });
+
+    } catch (err) {
+        console.error("Database error:", err);
+        res.status(500).json({ success: false, message: err.sqlMessage || "Database error" });
+    }
 });
 
 function createSampleQuiz(id) {

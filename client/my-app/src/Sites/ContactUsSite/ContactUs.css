@@ -23,13 +23,14 @@
 }
 
 .registerInputbox {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 800px;
-    margin-bottom: 20px;
-    font-size: 14px;
-    width: 100%; /* Make input boxes fill the container */
-    max-width: 300px; /* Limit maximum width if needed */
+    width: 90%;
+    padding: 0.8rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #000;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .registerInputbox:focus {
@@ -38,17 +39,23 @@
 }
 
 .Contact-us-button {
-    cursor: pointer;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
+    width: 90%;
+    padding: 0.85rem 1rem;
+    background: #61dafb;
+    color: #000;
     border: none;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-    width: 100%; /* Make button fill the container */
-    max-width: 300px; /* Limit maximum width if needed */
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+    margin-top: 20px;
+}
+.Contact-us-button:hover,
+.Contact-us-button:focus {
+    background: #4d9fe6;
 }
 
-.Contact-us-button:hover {
-    background-color: #0056b3;
+.Contact-us-button:active {
+    transform: scale(0.97);
 }
