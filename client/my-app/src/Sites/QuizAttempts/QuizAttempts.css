@@ -4,7 +4,7 @@
     padding: 1rem 1.5rem;
     background: #2e333d;           /* dark slate to match other pages */
     border-radius: 12px;
-
+    max-height: fit-content;
 }
 
 .attempts-container h1 {
