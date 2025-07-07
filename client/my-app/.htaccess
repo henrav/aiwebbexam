@@ -1,0 +1,12 @@
+# .htaccess in /build
+RewriteEngine On
+
+# 1️⃣  Skip SPA rewrite for the API
+RewriteCond %{REQUEST_URI} ^/api/ [NC]
+RewriteRule ^ - [L]
+
+# 2️⃣  Normal CRA single-page-app rewrite
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]

@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE:     ${DB_NAME}
+    ports: ["3307:3306"]
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build: ./server
+    environment:
+      DB_HOST: mysql
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    ports: ["3001:3001"]          # host 3001 → container 3001
+    depends_on: [mysql]
+
+  frontend:
+    build: ./client/my-app        # uses the Nginx Dockerfile above
+    environment:
+      REACT_APP_API_URL: http://localhost:3001   # or delete if you call relative paths
+    ports: ["3000:80"]            # host 3000 → Nginx 80
+    depends_on: [backend]
+
+volumes:
+  mysql_data:

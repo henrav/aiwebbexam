@@ -1,0 +1,211 @@
+:root {
+  --blue:  #61dafb;
+  --blue-dark: #4d9fe6;
+  --green: #0a8d22;
+  --green-dark: #086e1b;
+  --red:   #d9534f;
+  --red-dark: #c23330;
+  --bg-row: #3a3f4b;
+  --bg-row-hover: #444a57;
+  --text-light: #fdfdfd;
+  --text-dark:  #000;
+  --shadow: 0 6px 18px rgba(0,0,0,0.25);
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* ==============================================================
+   CONTAINER
+   --------------------------------------------------------------*/
+.quiz-container {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==============================================================
+   ONE ROW
+   --------------------------------------------------------------*/
+.quiz-item {
+  display: flex;
+
+  align-items: center;
+  gap: 1rem;
+
+  background: var(--bg-row);
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  transition: background 0.2s ease, transform 0.12s ease;
+}
+.quiz-item:hover {
+  background: var(--bg-row-hover);
+  transform: translateY(-2px);
+}
+
+/* ==============================================================
+   TITLE + “TA Quiz” live in same block
+   --------------------------------------------------------------*/
+.quiz-input {
+  flex: 1 1 55%;            /* grow / shrink but keep ~half width */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.quiz-input .quiz {
+  flex: 1 1 auto;
+  border: none;
+  background: transparent;
+  color: var(--text-light);
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  pointer-events: none;     /* truly read-only */
+}
+.quiz-input .quiz::placeholder {
+  color: #c9c9c9;
+}
+
+/* ==============================================================
+   SHARED BUTTON STYLE
+   --------------------------------------------------------------*/
+.quiz-button,
+.previous-attempts-button,
+.remove-button {
+  padding: 0.6rem 1.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease, color 0.2s ease;
+}
+.quiz-button:active,
+.previous-attempts-button:active,
+.remove-button:active {
+  transform: scale(0.97);
+}
+
+/* primary (take quiz) */
+.quiz-button {
+  background: var(--green);
+  color: #fff;
+}
+.quiz-button:hover,
+.quiz-button:focus {
+  background: var(--green-dark);
+}
+
+.buttonThingy{
+  height: 4vh;
+  width:7vw;
+  padding: 0.2rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease, color 0.2s ease;
+}
+.buttonThingy:hover{
+    transform: scale(1.05);
+
+    color: #fff;
+
+
+}
+
+
+.redButton{
+  background: #ea0000;
+  color: white;
+}
+
+.greenButton{
+  background: #31c031;
+  color: white;
+}
+
+.whiteButton{
+  background: white;
+  color: black;
+}
+
+
+
+/* neutral (view attempts) */
+.previous-attempts-button {
+  background: #e7e7e7;
+  color: var(--text-dark);
+}
+.previous-attempts-button:hover,
+.previous-attempts-button:focus {
+  background: #d4d4d4;
+}
+
+/* danger (remove quiz) */
+.remove-button {
+  background: var(--red);
+  color: #fff;
+}
+.remove-button:hover,
+.remove-button:focus {
+  background: var(--red-dark);
+}
+
+.no-quizzes-cta {
+  text-align: center;
+  margin: 3rem 0;
+  color: #fdfdfd;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  align-items: center;
+}
+
+/* re-use blue button style, but here it is if you don’t have it yet */
+.upload-btn {
+  background: #61dafb;
+  color: #000;
+  border: none;
+  padding: 0.8rem 1.6rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.upload-btn:hover,
+.upload-btn:focus {
+  background: #4d9fe6;
+}
+.upload-btn:active {
+  transform: scale(0.97);
+}
+
+.fetching-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+}
+
+.spinner2 {
+  z-index: 999;
+  position: inherit;
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+  

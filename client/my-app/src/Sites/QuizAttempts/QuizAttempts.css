@@ -1,0 +1,87 @@
+.attempts-container {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 1rem 1.5rem;
+    background: #2e333d;           /* dark slate to match other pages */
+    border-radius: 12px;
+
+}
+
+.attempts-container h1 {
+    margin: 0 0 1.25rem;
+    font-size: 1.75rem;
+    text-align: center;
+    color: #ffffff;
+}
+
+/* -------------------------------------------------------------
+   EACH ATTEMPT CARD
+----------------------------------------------------------------*/
+.attempt-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: #3a3f4b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.9rem 1.2rem;
+    margin-top: 0.9rem;
+
+    transition: background 0.2s ease, transform 0.12s ease;
+}
+
+.attempt-item:hover {
+    background: #444a57;
+    transform: translateY(-2px);
+}
+
+/* -------------------------------------------------------------
+   DETAILS
+----------------------------------------------------------------*/
+.attempt-details p {
+    margin: 0.2rem 0;
+    color: #e6e6e6;
+    font-size: 0.95rem;
+}
+
+.attempt-details p:first-child {
+    font-weight: 600;
+    color: #61dafb;               /* blue accent for the score */
+}
+
+/* -------------------------------------------------------------
+   BUTTON
+----------------------------------------------------------------*/
+.attempt-item button {
+    padding: 0.55rem 1.2rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    background: #61dafb;          /* brand blue */
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.attempt-item button:hover,
+.attempt-item button:focus {
+    background: #4d9fe6;
+}
+
+.attempt-item button:active {
+    transform: scale(0.97);
+}
+
+/* -------------------------------------------------------------
+   EMPTY-STATE MESSAGE
+----------------------------------------------------------------*/
+.attempts-container > p {
+    text-align: center;
+    margin-top: 2rem;
+    color: #c9c9c9;
+    font-size: 1rem;
+}

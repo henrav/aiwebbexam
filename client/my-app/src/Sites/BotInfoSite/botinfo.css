@@ -1,0 +1,24 @@
+.App-body {
+    padding-top: 20px; 
+}
+
+.test {
+    margin-top: 20px; 
+}
+
+.textbox-botInfo {
+    background-color: #f0f0f0; 
+    padding: 20px; 
+    border-radius: 8px;
+    margin-bottom: 20px; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+    text-align: left; 
+    width: 60%; 
+    margin: auto; 
+    margin-top: 50px; 
+}
+
+.textbox-botInfo p {
+    font-size: 18px; 
+    color: black; 
+}

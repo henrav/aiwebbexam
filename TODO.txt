@@ -1,0 +1,46 @@
+PREVENT PROGRESSING QUIZ WITHOUT SELECTING ALTERNATIVE
+
+Add QuizAttempts button on OldQuizzes
+
+-Implement QuizAttempts
+Implement QuizAttempt
+
+Ensure deletion cascades work for Quizzes and QuizAttempts and anything else
+    User -> Quiz -> everything related
+
+Ensure cohesive look for all sites
+    About
+    BotInfo
+    ContactUs
+    Dashboard
+    FileUpload
+    Login
+    OldQuizzes
+    QuizAttempt
+    QuizAttempts
+    Quiz
+    Register
+    RemoveQuiz
+
+Look over .css files
+
+JSDoc all .js files
+
+Remove trash code
+
+FOR THE REPORT:
+
+Update diagrams
+    DB
+    Sites
+    Flowcharts???
+
+Remember to explain flaws, weaknesses, unfinished parts in the report
+    User Deletion
+    DB Reset
+
+Screenshots showing functionalities
+
+User Instructions
+
+Video Demo

@@ -1,0 +1,151 @@
+.Register-main {
+    max-height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+/* =============================================================
+   CARD
+   -----------------------------------------------------------*/
+.RegisterBox {
+    background: #2e333d;
+    padding: 1.5rem 1rem;
+    width: 100%;
+    max-width: 480px;
+
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 1.2rem 1.5rem;
+
+}
+
+/* =============================================================
+   TITLE
+   -----------------------------------------------------------*/
+.RegisterTitleContainer {
+    position: absolute;            /* overlay the title above card */
+    top: 0;
+    width: 100%;
+    text-align: center;
+    transform: translateY(-140%);
+}
+
+.RegisterTitle {
+    color: #fdfdfd;
+    font: 600 2.2rem/1 "Arial", sans-serif;
+}
+
+/* =============================================================
+   LABELS + INPUTS
+   -----------------------------------------------------------*/
+.RegisterText {
+    color: #fdfdfd;
+    font-size: 1rem;
+    align-self: center;
+}
+
+.Registerbox-default {
+    min-width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+/* =============================================================
+   CHECKBOX
+   -----------------------------------------------------------*/
+.RegisterRowCheckBox {
+    /* keep it on the same grid row, but right-align next to the field */
+    grid-column: 2 / 3;                 /* sits under the input column   */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: -0.2rem;                /* nudge upward for perfect align */
+    user-select: none;
+    font-size: 0.95rem;
+    color: #fdfdfd;
+}
+
+.RegisterRowCheckBox input[type="checkbox"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #cfcfcf;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    margin-left: 20px;
+}
+
+.RegisterRowCheckBox input[type="checkbox"]:checked {
+    background: #61dafb;
+    border-color: #61dafb;
+}
+
+.RegisterRowCheckBox input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    width: 6px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+/* =============================================================
+   BUTTON
+   -----------------------------------------------------------*/
+.RegisterButton {
+    grid-column: 1 / -1;           /* full width row */
+    padding: 0.9rem 1rem;
+    background: #61dafb;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.RegisterButton:hover,
+.RegisterButton:focus {
+    background: #4d9fe6;
+}
+
+.RegisterButton:active {
+    transform: scale(0.97);
+}
+
+.RegisterBoxContainer{
+    min-width: fit-content;
+    min-height: fit-content;
+    display: block;
+
+    background: #2e333d;
+    padding: 1.5rem 1rem;
+    width: 100%;
+    max-width: 480px;
+
+
+    grid-template-columns: max-content 1fr;
+    gap: 1.2rem 1.5rem;
+
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.register-error{
+    color: #ff0000;
+    font-size: 1.2rem;
+    margin-bottom: auto;
+    margin-top: auto;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}

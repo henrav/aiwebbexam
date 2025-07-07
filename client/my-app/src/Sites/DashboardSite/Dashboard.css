@@ -1,0 +1,56 @@
+.user-details {
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+ }
+
+
+.welcomethingy {
+    color: #007bff;
+    margin-bottom: 0.5em;
+ }
+ 
+ 
+ .thingys {
+    font-size: 16px;
+    color: #666;
+    margin-top: 5px;
+ }
+
+ 
+ .profile-pic-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin-left: auto;
+ }
+ 
+ 
+ .profile-pic {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+ }
+ 
+ 
+ .upload-button {
+    position: absolute;
+    width: 150%;
+    height: 40%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 50%;
+ }
+ 

@@ -1,0 +1,116 @@
+/* ------------------------------------------------------------- */
+/*  Answer-status badges (right-side pills)                      */
+/* ------------------------------------------------------------- */
+
+/*  The answer row (<div class="Quiz-question-container"> … )    */
+/*  must have position:relative so the badge can be absolutely   */
+/*  positioned without shifting the text.                        */
+.Quiz-question-container {
+    justify-items: center;
+    align-items: center;
+    position: relative;
+    padding: 1rem 2rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    transition: background 0.2s ease;
+
+    gap: 1rem;                         /* space between them          */
+}
+.potanswer-inner{
+
+}
+.badge-thingy {
+    position: absolute;
+    right: -1.5rem;
+    top: -1%;
+    right: -10%;
+
+    z-index: 10;
+    pointer-events: none;
+    width: fit-content;
+    gap: 1rem;
+}
+
+/* (optional) little slide-in animation */
+.badge-thingy {
+    animation: pop-in 250ms ease-out;
+}
+@keyframes pop-in {
+    from { opacity: 0; transform: translate(1rem, -50%); }
+    to   { opacity: 1; transform: translate(0,   -50%); }
+}
+.quiz-thingy-container{
+    position: relative;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+}
+/* keep long sentences from hitting the pill */
+.Quiz-question-potanswer {
+    text-align: center;
+    max-width: 90%;                   /* prevents super-long overflow     */
+    word-break: break-word;
+
+}
+
+/* blue / red pills */
+.Quiz-question-correct,
+.Quiz-question-incorrect {
+    padding: 0.45rem 0.9rem;
+    border-radius: 6px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 0 0 2px rgba(0,0,0,.15);
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.Quiz-question-correct   { background:#61dafb; color:#fff; }
+.Quiz-question-incorrect { background:#ff4c4c; color:#fff; }
+
+/* ------------------------------------------------------------- */
+/*  Custom radio (answer selector)                               */
+/* ------------------------------------------------------------- */
+.Quiz-question-answer-box-container input {
+    appearance: none;                /* hide native radio          */
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.Quiz-question-answer-box-container input:hover {
+    border-color: #9fd6ff;
+}
+
+.Quiz-question-answer-box-container input:checked {
+    background: #61dafb;
+    border-color: #61dafb;
+}
+
+.Quiz-question-answer-box-container input:checked::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 7px;
+    width: 6px;
+    height: 12px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* ------------------------------------------------------------- */
+/*  Score headline                                               */
+/* ------------------------------------------------------------- */
+.Quiz-body-Score {
+    font-size: 1.7rem;
+    color: #61dafb;
+    text-align: center;
+    font-weight: 700;
+    margin-top: 1.5rem;
+}

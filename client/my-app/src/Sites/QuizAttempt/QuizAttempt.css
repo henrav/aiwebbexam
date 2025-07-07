@@ -1,0 +1,22 @@
+/* Minimal styling for QuizAttempt component */
+.attempt-details-container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.attempt-details-container h1 {
+    color: #333;
+}
+
+.attempt-details-container p, .attempt-details-container ul {
+    color: #666;
+    font-size: 16px;
+}
+
+.attempt-details-container li {
+    margin-bottom: 10px;
+}
