@@ -3,7 +3,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
+    min-width: fit-content;
 }
 
 /* =============================================================
@@ -13,10 +13,10 @@
     background: #2e333d;
     padding: 1.5rem 1rem;
     width: 100%;
-    max-width: 480px;
+
 
     display: grid;
-    grid-template-columns: max-content 1fr;
+    grid-template-columns: max-content 1fr min-content;
     gap: 1.2rem 1.5rem;
 
 }
@@ -52,6 +52,7 @@
     border: none;
     border-radius: 6px;
     font-size: 1rem;
+    width: 15vw;
 }
 
 /* =============================================================
@@ -130,8 +131,7 @@
 
     background: #2e333d;
     padding: 1.5rem 1rem;
-    width: 100%;
-    max-width: 480px;
+
 
 
     grid-template-columns: max-content 1fr;

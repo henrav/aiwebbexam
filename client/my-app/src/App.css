@@ -88,13 +88,12 @@
 
 .testMain {
   max-height: fit-content;
-  display: flex;
+  display: block;
   justify-content: center;
   align-items: center;
   background: transparent;
   height: 100vh;
-  width: 100%;
-  justify-content: center;
+  width: fit-content;
   justify-items: center;
 
 }
@@ -103,8 +102,8 @@
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
-
-  width: 100%;
+  top: 100px;
+  width: 50vw;
   max-width: 380px;
   padding: 2.5rem 2rem;
 
@@ -285,6 +284,7 @@
 }
 
 .App-body{
+  display: flex;
   min-height: 80vh;
   max-height: 80vh;
   width: 100%;
