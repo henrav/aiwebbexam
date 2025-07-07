@@ -25,7 +25,9 @@ services:
     build: ./client/my-app        # uses the Nginx Dockerfile above
     environment:
       REACT_APP_API_URL: http://localhost:3001   # or delete if you call relative paths
-    ports: ["3000:80"]            # host 3000 → Nginx 80
+    ports:
+      - "80:80"
+      - "443:8"
     depends_on: [backend]
 
 volumes:

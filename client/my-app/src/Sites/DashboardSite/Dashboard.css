@@ -9,7 +9,13 @@
     text-align: center;
  }
 
-
+.user-details{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+}
 .welcomethingy {
     color: #007bff;
     margin-bottom: 0.5em;
