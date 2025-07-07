@@ -12,6 +12,7 @@ CREATE TABLE `users` (
   `password_hash` varchar(100) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `last_login` datetime DEFAULT NULL,
+
   PRIMARY KEY (`user_id`)
 );
 

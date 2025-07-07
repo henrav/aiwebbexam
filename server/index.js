@@ -78,15 +78,26 @@ app.post("/api/login", async (req, res) => {
     });
 });
 
+function canGenerateQuiz(userId) {
+    const sql = 'SELECT COUNT(*) AS quiz_count FROM quizzes WHERE user_id = ?';
+
+    return new Promise((resolve, reject) => {
+        dbManager.getConnection().query(sql, [userId], (err, rows) => {
+            if (err) return reject(err);
+            resolve(rows[0].quiz_count < 5);
+        });
+    });
+}
+
 app.post("/api/register", async (req, res) => {
     const { username, email, firstName, lastName, password } = req.body;
 
     const callProcedure = 'CALL register_user(?, ?, ?, ?, ?)';
 
-    dbManager.getConnection().query(callProcedure, [username, email, firstName, lastName, password], function(err, result) {
+    await dbManager.getConnection().query(callProcedure, [username, email, firstName, lastName, password], function (err, result) {
         if (err) {
             console.error("Database error:", err);
-            res.status(500).json({ success: false, message: err.sqlMessage || "Database error" });
+            res.status(500).json({success: false, message: err.sqlMessage || "Database error"});
             return;
         }
 
@@ -102,10 +113,10 @@ app.post("/api/register", async (req, res) => {
             };
             console.log("User data:", userData);
             createSampleQuiz(userData.user_id);
-            res.json({ success: true, message: "User registered successfully", user: userData });
+            res.json({success: true, message: "User registered successfully", user: userData});
 
         } else {
-            res.json({ success: false, message: message });
+            res.json({success: false, message: message});
         }
     });
 });
@@ -231,6 +242,14 @@ app.post('/api/upload', (req, res) => {
       if (!req.file) {
         //another error thingy
           return res.status(400).send('No file uploaded.');
+      }
+
+      const allowed = await canGenerateQuiz(req.body.userId);
+      if (!allowed) {
+          return res.status(403).json({
+              success: false,
+              message: 'Quiz limit reached (max 5).',
+          });
       }
 
       try {

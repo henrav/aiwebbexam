@@ -2,17 +2,17 @@
 -- INSERT INTO `users` (`username`, `email`, `firstname`, `lastname`, `password_hash`, `created_at`, `last_login`)
 
 INSERT INTO `users`
-VALUES (1,'adam123','adam@gmail.com','adam','adamsson','hejsansvejsan','2024-04-15 12:22:45','2024-04-20 10:47:52'),
-       (2,'jeppe','jepser@gmail.com','jesper','pillaren','hejsan','2024-04-15 15:13:56','2024-04-19 14:42:19'),
-       (3,'henke','henke@ravnborg.se','henrik','ravnborg','hej','2024-04-15 15:19:34','2024-05-03 14:52:55'),
-       (4,'henkan','henkan@ravnborg.se','henrik','ravnborg','hej','2024-04-15 15:20:33','2024-04-15 15:20:33'),
-       (5,'hank','henken@ravnborg.se','henrik','ravnborg','hej','2024-04-15 15:22:02','2024-04-15 15:22:31'),
-       (6,'nilsan','nils@gmail.com','nils','fri','hej','2024-04-15 15:23:16','2024-04-19 16:01:00'),
-       (7,'matfri','matias@nånting.se','mati','fri','hejsan','2024-04-15 15:25:06','2024-04-15 15:25:06'),
-       (8,'matfri2','matiaaas@nånting.se','mati','fri','hejsan','2024-04-15 15:25:48','2024-04-15 15:25:48'),
-       (9,'lunden','johan@lund.se','johan','lund','hej','2024-04-15 15:30:07','2024-05-03 10:52:37'),
-       (10,'nils','nils@tjena.com','nilsfri','nilsen','hej','2024-04-15 16:12:22','2024-04-15 16:12:22'),
-       (11,'anders','anders@gmail.com','anders','hejsan','hej','2024-04-15 16:55:43','2024-04-15 16:59:38'),
+VALUES (1,'adam123','adam@gmail.com','adam','adamsson','hejsansvejsan','2024-04-15 12:22:45', '2024-04-20 10:47:52'),
+       (2,'jeppe','jepser@gmail.com','jesper','pillaren','hejsan','2024-04-15 15:13:56', '2024-04-19 14:42:19'),
+       (3,'henke','henke@ravnborg.se','henrik','ravnborg','hej','2024-04-15 15:19:34', '2024-05-03 14:52:55'),
+       (4,'henkan','henkan@ravnborg.se','henrik','ravnborg','hej','2024-04-15 15:20:33', '2024-04-15 15:20:33'),
+       (5,'hank','henken@ravnborg.se','henrik','ravnborg','hej','2024-04-15 15:22:02', '2024-04-15 15:22:31'),
+       (6,'nilsan','nils@gmail.com','nils','fri','hej','2024-04-15 15:23:16', '2024-04-19 16:01:00'),
+       (7,'matfri','matias@nånting.se','mati','fri','hejsan','2024-04-15 15:25:06', '2024-04-15 15:25:06'),
+       (8,'matfri2','matiaaas@nånting.se','mati','fri','hejsan','2024-04-15 15:25:48', '2024-04-15 15:25:48'),
+       (9,'lunden','johan@lund.se','johan','lund','hej','2024-04-15 15:30:07', '2024-05-03 10:52:37'),
+       (10,'nils','nils@tjena.com','nilsfri','nilsen','hej','2024-04-15 16:12:22', '2024-04-15 16:12:22'),
+       (11,'anders','anders@gmail.com','anders','hejsan','hej','2024-04-15 16:55:43', '2024-04-15 16:59:38'),
        (12, 'user', 'example@mail.com', 'user', 'mcUser', 'password', NOW(), NOW());
 
 INSERT INTO `quizzes`
