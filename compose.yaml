@@ -5,8 +5,8 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-
+      MYSQL_DATABASE:      ${MYSQL_DATABASE}
+      MYSQL_ROOT_HOST:     '%'
     ports: ["3307:3306"]
     volumes:
       - mysql_data:/var/lib/mysql
@@ -28,11 +28,17 @@ services:
   frontend:
     build: ./client/my-app
     environment:
-      REACT_APP_API_URL: http://localhost:3001
+      # inside the container, “backend” resolves to the API container
+      REACT_APP_API_URL: http://backend:3001
     ports:
-      - "80:80"
-      - "443:80"
-    depends_on: [backend]
+      - "80:80"                # public HTTP
+      - "443:443"
+    volumes:
+      - letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - backend
 
 volumes:
   mysql_data:
+  letsencrypt:
+    external: true
