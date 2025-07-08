@@ -1,5 +1,5 @@
 
-
+DELIMITER $$
 CREATE PROCEDURE GetQuizDetailsByQuizId(IN quiz_id INT)
 BEGIN
     SELECT JSON_OBJECT(
@@ -27,7 +27,7 @@ BEGIN
     JOIN questions qu ON q.quiz_id = qu.quiz_id
     WHERE q.quiz_id = quiz_id
     GROUP BY q.quiz_id;
-END;
+END $$
 
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetQuizNamesByUserId`(IN `userid` INT)
@@ -36,7 +36,7 @@ BEGIN
     FROM quizzes
     WHERE user_id = userid;
     
-END;
+END $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetQuizzesQuestionsAnswersByUserId`(IN `user_id` INT)
 BEGIN
@@ -64,7 +64,7 @@ BEGIN
     JOIN questions qu ON q.quiz_id = qu.quiz_id
     WHERE q.user_id = user_id
     GROUP BY q.quiz_id;
-END;
+END $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertQuizData`(IN quizData JSON)
 BEGIN
@@ -105,7 +105,7 @@ BEGIN
 
         SET v_index = v_index + 1;
     END WHILE;
-END;
+END $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `login_user`(
     IN p_identifier VARCHAR(100),
@@ -134,7 +134,9 @@ BEGIN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Invalid credentials';
     END IF;
-END;
+END $$
+
+
 
 
 
@@ -170,7 +172,7 @@ BEGIN
 			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'A user with this email already exists.';
 		END IF;
 	END IF;
-END;
+END $$
 
 
 
@@ -185,11 +187,13 @@ BEGIN
 	WHERE qa.user_id = user_id
     ORDER BY 
         qa.attempt_time DESC;
-END;
+END $$
 
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteQuiz`(IN q_id INT)
 BEGIN
 	DELETE FROM quizzes WHERE quiz_id = q_id; 
-END;
+END $$
 
+
+DELIMITER ;
