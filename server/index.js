@@ -12,25 +12,22 @@ const app = express();
 require('dotenv').config({path: '../.env'});
 app.use(express.json());
 // Project Imports
-const DatabaseManager = require('./DatabaseManager');
+
+const mysqlConfig = {
+    host:     process.env.MYSQL_HOST,
+    port:     Number(process.env.MYSQL_PORT) || 3306,
+    user:     process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+};
+//const DatabaseManager = require('./DatabaseManager');
+const pool = mysql.createPool(mysqlConfig).promise();
 
 // Correct way to configure the OpenAI API client, should probably store my api key in a .env file seperate from alla er, speciellt nils. men men 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 })
 
-
-// Connect to and setup database
-const dbManager = new DatabaseManager();
-dbManager.initializeDatabase()
-    .then(() => {
-        console.log('Database initialized successfully.');
-        //dbManager.close(); //TODO MAYBE FIX
-    })
-    .catch(err => {
-        console.error('Failed to initialize the database:', err);
-        dbManager.close();
-    });
 
 
 
@@ -47,87 +44,104 @@ const upload = multer({ storage: storage }).single('file');
 
 
 app.post("/api/login", async (req, res) => {
+    try {
+        let { username, password } = req.body;
+        username = username.trim();
 
-    let { username, password } = req.body;
-    username = username.trim();
+        const callProcedure = 'CALL login_user(?, ?)';
 
-    const callProcedure = 'CALL login_user(?, ?)';
+        const [resultSets] = await pool.query(callProcedure, [username, password]);
+        const row = resultSets[0]?.[0];
 
-    dbManager.getConnection().query(callProcedure, [username, password], function(err, result, fields) {
-        if (err) {
-            console.error("Database error:", err);
-            res.status(500).json({ success: false, message: err.sqlMessage || "Database error" });
-            return;
+        if (!row) {
+            return res.status(401).json({ success: false, message: "Invalid credentials" });
         }
 
-        if (result[0][0].message.includes("Login successful")) {
-
+        if (row.message.includes("Login successful")) {
             const userData = {
-                user_id: result[0][0].user_id,
-                username: result[0][0].username,
-                email: result[0][0].email,
-                firstname: result[0][0].firstname,
-                lastname: result[0][0].lastname,
-                last_login: result[0][0].last_login
+                user_id:   row.user_id,
+                username:  row.username,
+                email:     row.email,
+                firstname: row.firstname,
+                lastname:  row.lastname,
+                last_login: row.last_login
             };
             console.log("User data:", userData);
-            res.json({ success: true, message: "Login successful", user: userData });
+            return res.json({ success: true, message: "Login successful", user: userData });
         } else {
-            res.json({ success: false, message: result[0][0].message });
+            return res.json({ success: false, message: row.message });
         }
-    });
+    } catch (err) {
+        console.error("Database error:", err);
+
+        if (err.code === "ER_SIGNAL_EXCEPTION") {
+            return res.status(401).json({ success: false, message: err.sqlMessage });
+        }
+        return res.status(500).json({ success: false, message: err.sqlMessage || "Database error" });
+    }
 });
 
-function canGenerateQuiz(userId) {
+async function canGenerateQuiz(userId) {
     const sql = 'SELECT COUNT(*) AS quiz_count FROM quizzes WHERE user_id = ?';
-
-    return new Promise((resolve, reject) => {
-        dbManager.getConnection().query(sql, [userId], (err, rows) => {
-            if (err) return reject(err);
-            resolve(rows[0].quiz_count < 5);
-        });
-    });
+    try {
+        const [rows] = await pool.query(sql, [userId]);
+        return rows[0].quiz_count < 5;
+    } catch (err) {
+        console.error("Error in canGenerateQuiz:", err);
+        throw err;
+    }
 }
-
 app.post("/api/register", async (req, res) => {
     const { username, email, firstName, lastName, password } = req.body;
     const callProcedure = 'CALL register_user(?, ?, ?, ?, ?)';
 
     try {
-        const connection = await dbManager.getConnection();
-        const [resultSets] = await connection.promise().query(callProcedure, [username, email, firstName, lastName, password]);
+        // 🔹 only change: use the shared pool instead of dbManager
+        const [resultSets] = await pool.query(callProcedure, [
+            username,
+            email,
+            firstName,
+            lastName,
+            password,
+        ]);
 
-        const result = resultSets[0]; // första resultset från stored procedure
+        const result = resultSets[0]; // first result‐set from the stored procedure
         const message = result[0]?.message || "Unknown response";
 
         if (message.includes("User registered")) {
             const userData = {
-                user_id: result[0].user_id,
-                username: result[0].username,
-                email: result[0].email,
+                user_id:   result[0].user_id,
+                username:  result[0].username,
+                email:     result[0].email,
                 firstname: result[0].firstname,
-                lastname: result[0].lastname,
-                last_login: result[0].last_login
+                lastname:  result[0].lastname,
+                last_login: result[0].last_login,
             };
 
             console.log("User data:", userData);
             createSampleQuiz(userData.user_id);
-            res.json({ success: true, message: "User registered successfully", user: userData });
-
+            return res.json({
+                success: true,
+                message: "User registered successfully",
+                user: userData,
+            });
         } else {
-            res.json({ success: false, message });
+            return res.json({ success: false, message });
         }
-
     } catch (err) {
         console.error("Database error:", err);
-        res.status(500).json({ success: false, message: err.sqlMessage || "Database error" });
+        return res.status(500).json({
+            success: false,
+            message: err.sqlMessage || "Database error",
+        });
     }
 });
 
-function createSampleQuiz(id) {
 
+
+async function createSampleQuiz(userId) {
     const sampleQuiz = {
-        userId: id,
+        userId,
         title: "Sample Quiz",
         questionsAndAnswers: [
             {
@@ -147,88 +161,78 @@ function createSampleQuiz(id) {
             }
         ]
     };
-    createQuiz(sampleQuiz);
-  getQuizIDLatest(id)
-        .then(quizId => {
-            if (quizId) {
-                console.log('Latest quiz ID for user:', id, 'is', quizId);
-                createSampleAttempt(id, quizId).then(r =>
-                    console.log('Sample attempt created for user:', id, 'with quiz ID:', quizId)
-                ).catch(err =>
-                    console.error('Error creating sample attempt for user:', id, 'with quiz ID:', quizId, err)
-                );
-            } else {
-                console.log('No quizzes found for user:', id);
-            }
-        })
-        .catch(err => {
-            console.error('Error fetching latest quiz ID:', err);
-        });
 
+    try {
+        // 1️⃣ insert the sample quiz
+        await createQuiz(sampleQuiz);
+        console.log('Sample quiz created for user:', userId);
 
+        // 2️⃣ fetch its generated ID
+        const quizId = await getQuizIDLatest(userId);
+        if (!quizId) {
+            console.log('No quizzes found after insert for user:', userId);
+            return;
+        }
+        console.log('Latest quiz ID for user:', userId, 'is', quizId);
 
+        // 3️⃣ insert a sample attempt for that quiz
+        await createSampleAttempt(userId, quizId);
+        console.log('Sample attempt created for user:', userId, 'quiz ID:', quizId);
+    } catch (err) {
+        console.error('Error in createSampleQuiz for user:', userId, err);
+    }
 }
 
-function getQuizIDLatest(userID){
-    sql = `SELECT quiz_id FROM quizzes WHERE user_id = ?`;
-    return new Promise((resolve, reject) => {
-        dbManager.getConnection().query(sql, [userID], (err, results) => {
-            if (err) {
-                console.error('Error fetching latest quiz ID:', err);
-                return reject(err);
-            }
-            if (results.length > 0) {
-                resolve(results[0].quiz_id);
-            } else {
-                resolve(null); // No quizzes found for this user
-            }
-        });
-    });
+
+async function getQuizIDLatest(userID) {
+    const sql = 'SELECT quiz_id FROM quizzes WHERE user_id = ?';
+
+    try {
+        const [rows] = await pool.query(sql, [userID]);
+        return rows.length > 0 ? rows[0].quiz_id : null;
+    } catch (err) {
+        console.error('Error fetching latest quiz ID:', err);
+        // Return null on error so callers don’t crash
+        return null;
+    }
 }
+
 async function createSampleAttempt(userId, quizId) {
-
     console.log('Creating sample attempt for user:', userId, 'with quiz ID:', quizId);
+
     const sampleAttempt = {
-        userId: userId,
-        quizId: quizId,
+        userId,
+        quizId,
         answers: {
-            0: {answerId: 1, isCorrect: 1},
-            1: {answerId: 2, isCorrect: 0},
-            2: {answerId: 3, isCorrect: 1}
+            0: { answerId: 1, isCorrect: 1 },
+            1: { answerId: 2, isCorrect: 0 },
+            2: { answerId: 3, isCorrect: 1 },
         },
         score: 2,
-        totalQuestions: 3
+        totalQuestions: 3,
     };
 
     try {
         const response = await fetch(`http://localhost:${PORT}/api/submitQuizAnswers`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                userId: sampleAttempt.userId,
-                quizId: sampleAttempt.quizId,
-                answers: sampleAttempt.answers,
-                score: sampleAttempt.score,
-                totalQuestions: sampleAttempt.totalQuestions
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sampleAttempt),
+        });
 
-        })
         if (!response.ok) {
-            throw new Error('Failed to create sample attempt');
+            console.error('submitQuizAnswers returned status', response.status);
+            return false;
         }
+
         const data = await response.json();
         console.log('Sample attempt created successfully:', data);
-
-    } catch (error) {
-        console.error('Error creating sample attempt:', error);
-
+        return true;
+    } catch (err) {
+        console.error('Error creating sample attempt:', err);
+        return false;
     }
-
-
-
 }
+
 
 
 
@@ -409,19 +413,17 @@ async function createQuiz5Questions(pdfToText, userId, title) {
 
 
 function createQuiz(responseData) {
+    const callProcedure = 'CALL InsertQuizData(?)';
 
-  const callProcedure = 'CALL InsertQuizData(?)';
-
-
-    dbManager.getConnection().query(callProcedure, [JSON.stringify(responseData)], function(err, result) {
-      if (err) {
-          console.error("Database error:", err);
-          return;
-      }
-
-      console.log("Quiz and associated questions and answers inserted successfully.");
-  });
+    pool.query(callProcedure, [JSON.stringify(responseData)], (err, result) => {
+        if (err) {
+            console.error("Database error:", err);
+            return;
+        }
+        console.log("Quiz and associated questions and answers inserted successfully.");
+    });
 }
+
 
 
 /**
@@ -430,7 +432,8 @@ function createQuiz(responseData) {
 app.delete('/api/remove_quiz/:quizId', async (req, res) => {
     const { quizId } = req.params;
     try {
-        await dbManager.deleteQuizById(quizId);
+        // 🔹 only change: call the procedure via pool.query instead of dbManager
+        await pool.query('CALL DeleteQuiz(?)', [quizId]);
         res.status(200).json({ message: 'Quiz successfully deleted' });
     } catch (error) {
         console.error('Failed to delete quiz:', error);
@@ -443,8 +446,13 @@ app.delete('/api/remove_quiz/:quizId', async (req, res) => {
  */
 app.get('/api/quiz_attempts/:quizId', async (req, res) => {
     const { quizId } = req.params;
+
     try {
-        const attempts = await dbManager.getQuizAttemptsById(quizId);
+
+        const [attempts] = await pool.query(
+            'SELECT attempt_id, score, attempt_time FROM quiz_attempts WHERE quiz_id = ?',
+            [quizId]
+        );
         res.json({ attempts });
     } catch (error) {
         console.error('Failed to fetch quiz attempts:', error);
@@ -457,11 +465,9 @@ app.get('/api/quiz_attempts/:quizId', async (req, res) => {
  */
 
 
-
 app.post('/api/submitQuizAnswers', (req, res) => {
     const { userId, quizId, answers, score, totalQuestions } = req.body;
     const answerIds = [];
-
 
     for (const key in answers) {
         if (answers.hasOwnProperty(key)) {
@@ -469,114 +475,131 @@ app.post('/api/submitQuizAnswers', (req, res) => {
         }
     }
 
-
-    const ans_str = answerIds.join(', ');
+    const ans_str      = answerIds.join(', ');
     const attempt_time = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    const totalScore = `${score}/${totalQuestions}`;
+    const totalScore   = `${score}/${totalQuestions}`;
 
-    const sql = `INSERT INTO quiz_attempts (quiz_id, score, ans_str, attempt_time) VALUES (?, ?, ?, ?)`;
+    const sql = `
+      INSERT INTO quiz_attempts
+        (quiz_id, score, ans_str, attempt_time)
+      VALUES (?, ?, ?, ?)
+    `;
 
-
-    dbManager.getConnection().query(sql, [quizId, totalScore, ans_str, attempt_time], (err, result) => {
+    pool.query(sql, [quizId, totalScore, ans_str, attempt_time], (err, result) => {
         if (err) {
             console.error('Error saving quiz results:', err);
             return res.status(500).json({ message: 'Failed to save quiz results' });
         }
-        res.status(200).json({ message: 'Quiz results saved successfully', attemptId: result.insertId });
+        res
+            .status(200)
+            .json({ message: 'Quiz results saved successfully', attemptId: result.insertId });
     });
 });
 
 
-
-app.get('/api/quiz_attempt/:attemptId', (req, res) => {
+app.get('/api/quiz_attempt/:attemptId', async (req, res) => {
     const { attemptId } = req.params;
     console.log('Fetching attempt details for attempt ID:', attemptId);
-    dbManager.getConnection().query(`SELECT ans_str FROM quiz_attempts WHERE attempt_id = ?`, [attemptId], (err, results) => {
-        if (err) {
-            console.error('Error fetching attempt:', err);
-            return res.status(500).json({ message: 'Failed to fetch attempt details' });
-        }
+
+    try {
+        // 🔹 use promise‐based pool.query
+        const [results] = await pool.query(
+            'SELECT ans_str FROM quiz_attempts WHERE attempt_id = ?',
+            [attemptId]
+        );
+
         if (results.length === 0) {
             return res.status(404).json({ message: 'Quiz attempt not found' });
         }
 
+        const answerIds = results[0].ans_str
+            .split(',')
+            .map(id => parseInt(id.trim(), 10));
 
-
-        const answerIds = results[0].ans_str.split(',').map(id => parseInt(id.trim()));
-
-        res.json({ answerIds });
-    });
+        return res.json({ answerIds });
+    } catch (err) {
+        console.error('Error fetching attempt:', err);
+        return res.status(500).json({ message: 'Failed to fetch attempt details' });
+    }
 });
-
-
 
 
 
 app.get("/api/getQuizDetailed/:quizId", async (req, res) => {
     const quizId = req.params.quizId;
 
-    const userId = req.user?.id;
+    try {
+        // run your stored procedure via the promise API
+        const [resultSets] = await pool.query(
+            "CALL GetQuizDetailsByQuizId(?)",
+            [quizId]
+        );
+        const rows = resultSets[0] || [];
 
-    dbManager.getConnection().query('CALL GetQuizDetailsByQuizId(?)', [quizId], function(err, result, fields) {
-        if (err) {
-            console.error("Database error:", err);
-            res.status(500).json({ success: false, message: err.sqlMessage || "Database error" });
-            return;
+        if (!rows.length) {
+            return res
+                .status(404)
+                .json({ success: false, message: "No quiz found with ID " + quizId });
         }
 
-        if (result[0] && result[0].length > 0) {
-            const quizData = JSON.parse(JSON.stringify(result[0][0].QuizData));
-            console.log("Quiz Title:", quizData.title);
-            quizData.questions.forEach(question => {
-                console.log("Question:", question.text);
-                question.answers.forEach(answer => {
-                    console.log("Answer:", answer.text, "Correct:", answer.is_correct ? "Yes" : "No");
-                });
-            });
-
-            res.json({ success: true, quiz: quizData });
+        // robustly handle whatever shape QuizData comes back in
+        const raw = rows[0].QuizData;
+        let quizData;
+        if (typeof raw === "string") {
+            quizData = JSON.parse(raw);
         } else {
-            res.status(404).json({ success: false, message: "No quiz found with ID " + quizId });
+            // mysql2 may already have parsed it
+            quizData = raw;
         }
-    });
+
+        // same logging you had
+        console.log("Quiz Title:", quizData.title);
+        quizData.questions.forEach(question => {
+            console.log("Question:", question.text);
+            question.answers.forEach(answer => {
+                console.log(
+                    "Answer:",
+                    answer.text,
+                    "Correct:",
+                    answer.is_correct ? "Yes" : "No"
+                );
+            });
+        });
+
+        return res.json({ success: true, quiz: quizData });
+    } catch (err) {
+        console.error("Database error:", err);
+        return res
+            .status(500)
+            .json({ success: false, message: err.sqlMessage || "Database error" });
+    }
 });
 
 
 
-app.get("/api/getQuiz", async (req, res) => {
-    const querystring = 'CALL GetQuizNamesByUserId(?)';
+app.get('/api/getQuiz', async (req, res) => {
     const userId = req.query.userId;
-
-    if (!req.query.userId) {
-        console.log("No userId provided");
-        res.status(400).json({ success: false, message: "userId is required" });
-        return;
+    if (!userId) {
+        return res.status(400).json({ success: false, message: 'userId is required' });
     }
 
-    dbManager.getConnection().query(querystring, [userId], function(err, result, fields) {
-        if (err) {
-            console.error("Database error:", err);
-            res.status(500).json({ success: false, message: err.sqlMessage || "Database error" });
-            return;
+    try {
+        // ① run the procedure
+        const [sets] = await pool.query('CALL GetQuizNamesByUserId(?)', [userId]);
+        const rows   = sets[0] || [];
+
+        // ② respond
+        if (rows.length) {
+            const quizzes = rows.map(r => ({ id: r.quiz_id, title: r.title }));
+            return res.json({ success: true, quizzes });
         }
-
-
-        if (result[0] && result[0].length > 0) {
-            const quizNames = result[0].map(row => row.title);
-
-            quizNames.forEach((quizName, index) => {
-                quizNames[index] = { id: result[0][index].quiz_id, title: quizName };
-            });
-            console.log("Query result:", result[0]);
-            console.log("Quiz names:", quizNames);
-
-            res.json({ success: true, quizzes: quizNames });
-        } else {
-            console.log("No quizzes found for userId:", req.query.userId);
-            res.status(404).json({ success: false, message: "No quizzes found" });
-        }
-    });
+        return res.status(404).json({ success: false, message: 'No quizzes found' });
+    } catch (err) {
+        console.error('Database error:', err);
+        return res.status(500).json({ success: false, message: 'Database error' });
+    }
 });
+
 
 
 app.listen(PORT, () => {
